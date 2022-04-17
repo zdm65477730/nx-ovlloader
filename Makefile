@@ -167,14 +167,19 @@ all: $(BUILD)
 $(BUILD):
 	@[ -d $@ ] || mkdir -p $@
 	@$(MAKE) --no-print-directory -C $(BUILD) -f $(CURDIR)/Makefile
+	@rm -rf $(CURDIR)/SdOut
+	@mkdir -p $(CURDIR)/SdOut/atmosphere/contens/420000000007E51A/flags/
+	@cp -rf $(TARGET).nsp $(CURDIR)/SdOut/atmosphere/contens/420000000007E51A/exefs.nsp
+	@cp -rf toolbox.json $(CURDIR)/SdOut/atmosphere/contens/420000000007E51A/toolbox.json
+	@touch $(CURDIR)/SdOut/atmosphere/contens/420000000007E51A/flags/boot2.flag
 
 #---------------------------------------------------------------------------------
 clean:
 	@echo clean ...
 ifeq ($(strip $(APP_JSON)),)
-	@rm -fr $(BUILD) $(TARGET).nro $(TARGET).nacp $(TARGET).elf
+	@rm -fr $(BUILD) $(CURDIR)/SdOut $(TARGET).nro $(TARGET).nacp $(TARGET).elf
 else
-	@rm -fr $(BUILD) $(TARGET).nsp $(TARGET).nso $(TARGET).npdm $(TARGET).elf
+	@rm -fr $(BUILD) $(CURDIR)/SdOut $(TARGET).nsp $(TARGET).nso $(TARGET).npdm $(TARGET).elf
 endif
 
 
