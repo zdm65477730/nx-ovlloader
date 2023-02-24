@@ -170,7 +170,11 @@ $(BUILD):
 	@rm -rf $(CURDIR)/SdOut
 	@mkdir -p $(CURDIR)/SdOut/atmosphere/contents/420000000007E51A/flags/
 	@mkdir -p $(CURDIR)/SdOut/config/tesla/
+ifeq ($(strip $(APP_JSON)),)
+	@cp -rf $(TARGET).nro $(CURDIR)/SdOut/atmosphere/contents/420000000007E51A/exefs.nsp
+else
 	@cp -rf $(TARGET).nsp $(CURDIR)/SdOut/atmosphere/contents/420000000007E51A/exefs.nsp
+endif
 	@cp -rf toolbox.json $(CURDIR)/SdOut/atmosphere/contents/420000000007E51A/toolbox.json
 	@touch $(CURDIR)/SdOut/atmosphere/contents/420000000007E51A/flags/boot2.flag
 	@echo "[tesla]\nkey_combo=L+DUP+R" > $(CURDIR)/SdOut/config/tesla/config.ini
