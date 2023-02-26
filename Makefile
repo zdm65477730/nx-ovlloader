@@ -37,7 +37,8 @@ include $(DEVKITPRO)/libnx/switch_rules
 #   of a homebrew executable (.nro). This is intended to be used for sysmodules.
 #   NACP building is skipped as well.
 #---------------------------------------------------------------------------------
-TARGET		:=	nx-ovlloader
+APP_TITLE	:=	nx-ovlloader
+TARGET		:=	$(APP_TITLE)
 BUILD		:=	build
 SOURCES		:=	source
 DATA		:=	data
@@ -173,14 +174,14 @@ $(BUILD):
 	@mkdir -p $(CURDIR)/SdOut/atmosphere/contents/$(APP_TITID)/flags/
 	@mkdir -p $(CURDIR)/SdOut/config/tesla/
 ifeq ($(strip $(APP_JSON)),)
-	@cp -rf $(TARGET).nro $(CURDIR)/SdOut/atmosphere/contents/$(APP_TITID)/exefs.nsp
+	@cp -rf $(APP_TITLE).nro $(CURDIR)/SdOut/atmosphere/contents/$(APP_TITID)/exefs.nsp
 else
-	@cp -rf $(TARGET).nsp $(CURDIR)/SdOut/atmosphere/contents/$(APP_TITID)/exefs.nsp
+	@cp -rf $(APP_TITLE).nsp $(CURDIR)/SdOut/atmosphere/contents/$(APP_TITID)/exefs.nsp
 endif
 	@cp -rf toolbox.json $(CURDIR)/SdOut/atmosphere/contents/$(APP_TITID)/toolbox.json
 	@touch $(CURDIR)/SdOut/atmosphere/contents/$(APP_TITID)/flags/boot2.flag
 	@echo "[tesla]\nkey_combo=L+DUP+R" > $(CURDIR)/SdOut/config/tesla/config.ini
-	@cd $(CURDIR)/SdOut; zip -r -q -9 $(TARGET).zip atmosphere config; cd $(CURDIR)
+	@cd $(CURDIR)/SdOut; zip -r -q -9 $(APP_TITLE).zip atmosphere config; cd $(CURDIR)
 
 #---------------------------------------------------------------------------------
 clean:
