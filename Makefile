@@ -37,12 +37,14 @@ include $(DEVKITPRO)/libnx/switch_rules
 #   of a homebrew executable (.nro). This is intended to be used for sysmodules.
 #   NACP building is skipped as well.
 #---------------------------------------------------------------------------------
-TARGET		:=	ovll
+TARGET		:=	nx-ovlloader
 BUILD		:=	build
 SOURCES		:=	source
 DATA		:=	data
 INCLUDES	:=	include
 APP_VERSION	:=	1.0.6
+
+APP_TITID := $(shell grep -oP '"tid"\s*:\s*"\K(\w+)' $(TOPDIR)/toolbox.json)
 
 ifeq ($(RELEASE),)
 	APP_VERSION	:=	$(APP_VERSION)-$(shell git describe --dirty --always)
@@ -168,16 +170,17 @@ $(BUILD):
 	@[ -d $@ ] || mkdir -p $@
 	@$(MAKE) --no-print-directory -C $(BUILD) -f $(CURDIR)/Makefile
 	@rm -rf $(CURDIR)/SdOut
-	@mkdir -p $(CURDIR)/SdOut/atmosphere/contents/420000000007E51A/flags/
+	@mkdir -p $(CURDIR)/SdOut/atmosphere/contents/$(APP_TITID)/flags/
 	@mkdir -p $(CURDIR)/SdOut/config/tesla/
 ifeq ($(strip $(APP_JSON)),)
-	@cp -rf $(TARGET).nro $(CURDIR)/SdOut/atmosphere/contents/420000000007E51A/exefs.nsp
+	@cp -rf $(TARGET).nro $(CURDIR)/SdOut/atmosphere/contents/$(APP_TITID)/exefs.nsp
 else
-	@cp -rf $(TARGET).nsp $(CURDIR)/SdOut/atmosphere/contents/420000000007E51A/exefs.nsp
+	@cp -rf $(TARGET).nsp $(CURDIR)/SdOut/atmosphere/contents/$(APP_TITID)/exefs.nsp
 endif
-	@cp -rf toolbox.json $(CURDIR)/SdOut/atmosphere/contents/420000000007E51A/toolbox.json
-	@touch $(CURDIR)/SdOut/atmosphere/contents/420000000007E51A/flags/boot2.flag
+	@cp -rf toolbox.json $(CURDIR)/SdOut/atmosphere/contents/$(APP_TITID)/toolbox.json
+	@touch $(CURDIR)/SdOut/atmosphere/contents/$(APP_TITID)/flags/boot2.flag
 	@echo "[tesla]\nkey_combo=L+DUP+R" > $(CURDIR)/SdOut/config/tesla/config.ini
+	@cd $(CURDIR)/SdOut; zip -r -q -9 $(TARGET).zip atmosphere config; cd $(CURDIR)
 
 #---------------------------------------------------------------------------------
 clean:
