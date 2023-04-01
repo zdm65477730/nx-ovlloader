@@ -61,7 +61,7 @@ void __appInit(void)
         rc = setsysGetFirmwareVersion(&fw);
         if (R_SUCCEEDED(rc))
             hosversionSet(MAKEHOSVERSION(fw.major, fw.minor, fw.micro));
-        g_appletHeapSize = 0x400000;
+        g_appletHeapSize = 0x600000;
         g_appletHeapReservationSize = 0x00;
         setsysExit();
     }
@@ -263,6 +263,7 @@ void loadNro(void)
     do {
         map_addr = randomGet64() & 0xFFFFFF000ull;
         rc = svcMapProcessCodeMemory(g_procHandle, map_addr, (u64)nrobuf, total_size);
+
     } while (rc == 0xDC01 || rc == 0xD401);
 
     if (R_FAILED(rc))
@@ -270,21 +271,21 @@ void loadNro(void)
 
     // .text
     rc = svcSetProcessMemoryPermission(
-        g_procHandle, (u64)map_addr + header->segments[0].file_off, header->segments[0].size, Perm_R | Perm_X);
+        g_procHandle, map_addr + header->segments[0].file_off, header->segments[0].size, Perm_R | Perm_X);
 
     if (R_FAILED(rc))
         fatalThrow(MAKERESULT(Module_HomebrewLoader, 19));
 
     // .rodata
     rc = svcSetProcessMemoryPermission(
-        g_procHandle, (u64)map_addr + header->segments[1].file_off, header->segments[1].size, Perm_R);
+        g_procHandle, map_addr + header->segments[1].file_off, header->segments[1].size, Perm_R);
 
     if (R_FAILED(rc))
         fatalThrow(MAKERESULT(Module_HomebrewLoader, 20));
 
     // .data + .bss
     rc = svcSetProcessMemoryPermission(
-        g_procHandle, (u64)map_addr + header->segments[2].file_off, rw_size, Perm_Rw);
+        g_procHandle, map_addr + header->segments[2].file_off, rw_size, Perm_Rw);
 
     if (R_FAILED(rc))
         fatalThrow(MAKERESULT(Module_HomebrewLoader, 21));
@@ -303,8 +304,7 @@ void loadNro(void)
         { EntryType_Argv,                 0, {0, 0} },
         { EntryType_NextLoadPath,         0, {0, 0} },
         { EntryType_LastLoadResult,       0, {0, 0} },
-        { EntryType_SyscallAvailableHint, 0, {UINT64_MAX, UINT64_MAX} },
-        { EntryType_SyscallAvailableHint2, 0, {UINT64_MAX, 0} },
+        { EntryType_SyscallAvailableHint, 0, {0xffffffffffffffff, 0x9fc1fff0007ffff} },
         { EntryType_RandomSeed,           0, {0, 0} },
         { EntryType_UserIdStorage,        0, {(u64)(uintptr_t)&g_userIdStorage, 0} },
         { EntryType_HosVersion,           0, {0, 0} },
@@ -319,22 +319,21 @@ void loadNro(void)
     entries[3].Value[0] = nro_heap_start;
     entries[3].Value[1] = nro_heap_size;
     // Argv
-    entries[4].Value[1] = (u64)(uintptr_t)&g_argv[0];
+    entries[4].Value[1] = (u64) &g_argv[0];
     // NextLoadPath
-    entries[5].Value[0] = (u64)(uintptr_t)&g_nextNroPath[0];
-    entries[5].Value[1] = (u64)(uintptr_t)&g_nextArgv[0];
+    entries[5].Value[0] = (u64) &g_nextNroPath[0];
+    entries[5].Value[1] = (u64) &g_nextArgv[0];
     // LastLoadResult
     entries[6].Value[0] = g_lastRet;
     // RandomSeed
-    entries[9].Value[0] = randomGet64();
-    entries[9].Value[1] = randomGet64();
+    entries[8].Value[0] = randomGet64();
+    entries[8].Value[1] = randomGet64();
     // HosVersion
-    entries[11].Value[0] = hosversionGet();
-    entries[11].Value[1] = hosversionIsAtmosphere() ? 0x41544d4f53504852UL : 0; // 'ATMOSPHR'
+    entries[10].Value[0] = hosversionGet();
 
     u64 entrypoint = map_addr;
 
-    g_nroAddr = (u64)map_addr;
+    g_nroAddr = map_addr;
     g_nroSize = nro_size;
 
     memset(__stack_top - STACK_SIZE, 0, STACK_SIZE);
