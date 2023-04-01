@@ -61,7 +61,7 @@ void __appInit(void)
         rc = setsysGetFirmwareVersion(&fw);
         if (R_SUCCEEDED(rc))
             hosversionSet(MAKEHOSVERSION(fw.major, fw.minor, fw.micro));
-        g_appletHeapSize = 0x600000;
+        g_appletHeapSize = 0x400000;
         g_appletHeapReservationSize = 0x00;
         setsysExit();
     }
