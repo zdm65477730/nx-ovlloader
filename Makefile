@@ -180,7 +180,7 @@ else
 endif
 	@cp -rf toolbox.json $(CURDIR)/SdOut/atmosphere/contents/$(APP_TITID)/toolbox.json
 	@touch $(CURDIR)/SdOut/atmosphere/contents/$(APP_TITID)/flags/boot2.flag
-	@echo "[tesla]\nkey_combo=L+DUP+R" > $(CURDIR)/SdOut/config/tesla/config.ini
+	@printf "[tesla]\nkey_combo=L+DUP+R" > $(CURDIR)/SdOut/config/tesla/config.ini
 	@cd $(CURDIR)/SdOut; zip -r -q -9 $(APP_TITLE).zip atmosphere config; cd $(CURDIR)
 
 #---------------------------------------------------------------------------------
