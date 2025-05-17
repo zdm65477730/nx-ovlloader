@@ -57,6 +57,15 @@ void __appInit(void)
 
     rc = setsysInitialize();
     if (R_SUCCEEDED(rc)) {
+        bool isTencentVersion = false;
+        if (R_SUCCEEDED(rc = setsysGetT(&isTencentVersion))) {
+            if (isTencentVersion) {
+                if (R_SUCCEEDED(rc = setsysSetT(false))) {
+                    setsysSetRegionCode(SetRegion_HTK);
+                }
+            }
+        }
+
         SetSysFirmwareVersion fw;
         rc = setsysGetFirmwareVersion(&fw);
         if (R_SUCCEEDED(rc))
