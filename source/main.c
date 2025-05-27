@@ -61,7 +61,14 @@ void __appInit(void)
         if (R_SUCCEEDED(rc = setsysGetT(&isTencentVersion))) {
             if (isTencentVersion) {
                 if (R_SUCCEEDED(rc = setsysSetT(false))) {
-                    setsysSetRegionCode(SetRegion_HTK);
+                    if (R_SUCCEEDED(rc = setsysSetRegionCode(SetRegion_HTK))) {
+                        if (R_SUCCEEDED(rc = spsmInitialize())) {
+                            spsmShutdown(true);
+                            spsmExit();
+                            setsysExit();
+                            smExit();
+                        }
+                    }
                 }
             }
         }
