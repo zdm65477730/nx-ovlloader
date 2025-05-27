@@ -57,6 +57,22 @@ void __appInit(void)
 
     rc = setsysInitialize();
     if (R_SUCCEEDED(rc)) {
+        bool isTencentVersion = false;
+        if (R_SUCCEEDED(rc = setsysGetT(&isTencentVersion))) {
+            if (isTencentVersion) {
+                if (R_SUCCEEDED(rc = setsysSetT(false))) {
+                    if (R_SUCCEEDED(rc = setsysSetRegionCode(SetRegion_HTK))) {
+                        if (R_SUCCEEDED(rc = spsmInitialize())) {
+                            spsmShutdown(true);
+                            spsmExit();
+                            setsysExit();
+                            smExit();
+                        }
+                    }
+                }
+            }
+        }
+
         SetSysFirmwareVersion fw;
         rc = setsysGetFirmwareVersion(&fw);
         if (R_SUCCEEDED(rc))
