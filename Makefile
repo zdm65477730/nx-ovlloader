@@ -43,7 +43,7 @@ BUILD		:=	build
 SOURCES		:=	source
 DATA		:=	data
 INCLUDES	:=	include
-APP_VERSION	:=	1.0.7
+APP_VERSION	:=	1.0.8
 
 APP_TITID := $(shell grep -oP '"tid"\s*:\s*"\K(\w+)' $(TOPDIR)/toolbox.json)
 
