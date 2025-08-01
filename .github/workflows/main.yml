@@ -14,10 +14,7 @@ jobs:
     steps:
       - name: Update packages
         run: |
-          sudo -n apt-get update
-          sudo -n apt-get upgrade -y git build-essential
           sudo -n apt-get install -y zip python3 python3-pip python3-lz4
-          sudo update-alternatives --install /usr/bin/python python /usr/bin/python3.9 1
         shell: bash
       - name: Update latest libnx
         run: |
